@@ -15,6 +15,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
     public static final String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
+    //logt
+    private static final String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
             String locale = primaryLocale.getDisplayName();
             Toast.makeText(this, locale, Toast.LENGTH_SHORT).show();
         }
+        Log.i(TAG, "initMethod: test log");
     }
 
     @Override
@@ -50,5 +53,10 @@ public class MainActivity extends AppCompatActivity {
         } else if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
             Toast.makeText(this, "portrait", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    public void toActivityTest(View view) {
+        Intent intent = new Intent(this, ActivityTest.class);
+        startActivity(intent);
     }
 }
