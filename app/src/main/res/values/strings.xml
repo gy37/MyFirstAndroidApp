@@ -3,4 +3,10 @@
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
     <string name="toActivityTest">跳转ActivityTest</string>
+    <string name="add">Add</string>
+    <string name="remove">Remove</string>
+    <string name="button_test_jump">测试跳转</string>
+    <string name="button_test_back">测试返回数据</string>
+    <string name="button_test_dialog">启动弹框Activity</string>
+    <string name="button_test_normal">启动正常Activity</string>
 </resources>

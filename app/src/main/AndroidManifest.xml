@@ -9,7 +9,21 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyFirstApp">
-        <activity android:name=".ActivityTest"/>
+        <activity android:name=".NormalActivity" />
+        <activity
+            android:name=".DialogActivity"
+            android:theme="@android:style/Theme.Dialog" />
+        <activity
+            android:name=".ActivityTest"
+            android:launchMode="singleInstance"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="com.example.myfirstapp.ACTION_START_TEST" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="com.example.myfirstapp.MY_CATEGORY" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".DisplayMessageActivity"
             android:parentActivityName=".MainActivity">
@@ -22,6 +36,7 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="This is MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
