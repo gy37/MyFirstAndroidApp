@@ -22,7 +22,6 @@ public class ActivityTest extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: ");
-        Log.d(TAG, "Task id is " + getTaskId());
         setContentView(R.layout.activity_test_layout);
 
         if (savedInstanceState != null) {
@@ -72,7 +71,6 @@ public class ActivityTest extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(ActivityTest.this, NormalActivity.class);
-//                Intent intent = new Intent(ActivityTest.this, ActivityTest.class);
                 startActivity(intent);
             }
         });

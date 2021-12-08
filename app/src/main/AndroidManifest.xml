@@ -9,14 +9,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MyFirstApp">
+        <activity android:name=".LayoutActivity"></activity>
         <activity android:name=".NormalActivity" />
         <activity
             android:name=".DialogActivity"
             android:theme="@android:style/Theme.Dialog" />
         <activity
             android:name=".ActivityTest"
-            android:launchMode="singleInstance"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="com.example.myfirstapp.ACTION_START_TEST" />
 
@@ -36,8 +37,8 @@
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label="This is MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:label="This is MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
