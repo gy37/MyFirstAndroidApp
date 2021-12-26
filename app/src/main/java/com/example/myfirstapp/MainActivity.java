@@ -4,15 +4,25 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
@@ -35,7 +45,68 @@ public class MainActivity extends AppCompatActivity {
         String message = editText.getText().toString();
         intent.putExtra(EXTRA_MESSAGE, message);
         startActivity(intent);
+        saveMessageFile(message);
+        saveMessagePreferences(message);
     }
+
+    public void saveMessageFile(String message) {
+        FileOutputStream outputStream = null;
+        BufferedWriter writer = null;
+        try {
+            outputStream = openFileOutput("data", Context.MODE_PRIVATE);
+            writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+            writer.write(message);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (writer != null) {
+                    writer.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    public String loadMessageFile() {
+        FileInputStream inputStream = null;
+        BufferedReader reader = null;
+        StringBuilder content = new StringBuilder();
+        try {
+            inputStream = openFileInput("data");
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                content.append(line);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        return content.toString();
+    }
+
+    public void saveMessagePreferences(String message) {
+        SharedPreferences.Editor editor = getSharedPreferences("data", MODE_PRIVATE).edit();
+        editor.putString("name", "Tom");
+        editor.putInt("age", 28);
+        editor.putBoolean("married", true);
+        editor.putString("description", message);
+        editor.apply();
+    }
+    public String loadMessagePreferences() {
+        SharedPreferences preferences = getSharedPreferences("data", MODE_PRIVATE);
+        String message = preferences.getString("description", "");
+        return message;
+    }
+
 
     public void initMethod() {
         Locale primaryLocale = null;
@@ -45,6 +116,14 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(this, locale, Toast.LENGTH_SHORT).show();
         }
         Log.i(TAG, "initMethod: test log");
+
+        EditText editText = findViewById(R.id.editTextTextPersonName);
+        String message = loadMessagePreferences();//loadMessageFile();
+        if (!TextUtils.isEmpty(message)) {
+            editText.setText(message);
+            editText.setSelection(message.length());
+            Toast.makeText(this, "Restoring succeeded", Toast.LENGTH_SHORT).show();
+        }
 
         Button button = findViewById(R.id.button11);
         button.setOnClickListener(new View.OnClickListener() {
