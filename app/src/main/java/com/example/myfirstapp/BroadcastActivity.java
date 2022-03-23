@@ -25,17 +25,20 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -50,6 +53,9 @@ public class BroadcastActivity extends AppCompatActivity {
     public static final int CHOOSE_PHOTO = 2;
     private ImageView picture;
     private Uri imageUri;
+
+    private MediaPlayer mediaPlayer = new MediaPlayer();
+    private VideoView videoView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,7 +103,7 @@ public class BroadcastActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(BroadcastActivity.this, ListViewActivity.class);
-                PendingIntent pendingIntent = PendingIntent.getActivity(BroadcastActivity.this, 0, intent, 0);
+                PendingIntent pendingIntent = PendingIntent.getActivity(BroadcastActivity.this, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
                 NotificationManager manager = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -160,6 +166,74 @@ public class BroadcastActivity extends AppCompatActivity {
                 }
             }
         });
+
+        if (ContextCompat.checkSelfPermission(BroadcastActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(BroadcastActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 3);
+        } else {
+            initMediaPlayer();
+        }
+        Button button6 = findViewById(R.id.button35);
+        button6.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!mediaPlayer.isPlaying()) {
+                    mediaPlayer.start();
+                }
+            }
+        });
+        Button button7 = findViewById(R.id.button36);
+        button7.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                }
+            }
+        });
+        Button button8 = findViewById(R.id.button37);
+        button8.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.reset();
+                    initMediaPlayer();
+                }
+            }
+        });
+
+        videoView = findViewById(R.id.videoView);
+        if (ContextCompat.checkSelfPermission(BroadcastActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(BroadcastActivity.this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 4);
+        } else {
+            initVideoPath();
+        }
+        Button button9 = findViewById(R.id.button38);
+        button9.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!videoView.isPlaying()) {
+                    videoView.start();
+                }
+            }
+        });
+        Button button10 = findViewById(R.id.button39);
+        button10.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (videoView.isPlaying()) {
+                    videoView.pause();
+                }
+            }
+        });
+        Button button11 = findViewById(R.id.button40);
+        button11.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (videoView.isPlaying()) {
+                    videoView.resume();
+                }
+            }
+        });
     }
 
     private void callPhone() {
@@ -176,6 +250,24 @@ public class BroadcastActivity extends AppCompatActivity {
         Intent intent = new Intent("android.intent.action.GET_CONTENT");
         intent.setType("image/*");
         startActivityForResult(intent, CHOOSE_PHOTO);
+    }
+
+    private void initMediaPlayer() {
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), "161899594247811864.mp3");
+            mediaPlayer.setDataSource(file.getPath());
+            mediaPlayer.prepare();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void initVideoPath() {
+        try {
+            File file = new File(Environment.getExternalStorageDirectory(), "b021d76b3316afe50c570288e8874e8d.mp4");
+            videoView.setVideoPath(file.getPath());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -195,6 +287,20 @@ public class BroadcastActivity extends AppCompatActivity {
                     Toast.makeText(this, "You denied the permission", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case 3:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initMediaPlayer();
+                } else {
+                    Toast.makeText(this, "无法读取音频文件", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            case 4:
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    initVideoPath();
+                } else {
+                    Toast.makeText(this, "无法读取视频文件", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
             default:
                 break;
         }
@@ -204,6 +310,13 @@ public class BroadcastActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         unregisterReceiver(networkChangeReceiver);
+        if (mediaPlayer != null) {
+            mediaPlayer.stop();
+            mediaPlayer.release();
+        }
+        if (videoView != null) {
+            videoView.suspend();
+        }
     }
 
     @Override
